@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ERA — European Risk Advisory</title>
+  <meta name="description" content="Independent, seasoned judgment at the moment of decision. Decision-layer advisory for global CEOs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant+SC:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0a0e1a;
+      --navy-mid:   #0e1628;
+      --navy-light: #182035;
+      --gold:       #b8935a;
+      --gold-light: #d4a96a;
+      --gold-pale:  #e8c98a;
+      --cream:      #f0ead8;
+      --cream-dim:  #c8c0a8;
+      --white:      #ffffff;
+      --rule:       rgba(184,147,90,0.25);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--cream-dim);
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 15px;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.6;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes lineExpand {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+    @keyframes starsSlow {
+      0%   { opacity: 0.7; }
+      50%  { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 64px;
+      background: linear-gradient(to bottom, rgba(10,14,26,0.98) 0%, transparent 100%);
+      animation: fadeIn 1.4s ease forwards;
+    }
+
+    .nav-logo {
+      font-family: 'Cormorant SC', serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 48px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Cormorant SC', serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--cream-dim);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--gold-light); }
+
+    .nav-cta {
+      font-family: 'Cormorant SC', serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .nav-cta:hover { color: var(--gold-pale); border-color: var(--gold-pale); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 40px 80px;
+      position: relative;
+      background: radial-gradient(ellipse at 50% 30%, rgba(20,32,60,0.9) 0%, var(--navy) 70%);
+    }
+
+    /* EU stars ring */
+    .stars-ring {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      margin: 0 auto 48px;
+      animation: starsSlow 4s ease-in-out infinite;
+      animation-delay: 1.2s;
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
+
+    .star {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      left: 50%;
+      top: 50%;
+      transform-origin: 0 0;
+      color: var(--gold);
+      font-size: 9px;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Cormorant SC', serif;
+      font-size: 11px;
+      letter-spacing: 0.45em;
+      color: var(--gold);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.4s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(42px, 6vw, 82px);
+      font-weight: 300;
+      line-height: 1.12;
+      color: var(--cream);
+      letter-spacing: 0.02em;
+      max-width: 820px;
+      margin: 0 auto 28px;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.7s forwards;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-rule {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 32px;
+      transform-origin: center;
+      transform: scaleX(0);
+      animation: lineExpand 0.8s ease 1.3s forwards;
+    }
+
+    .hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--cream-dim);
+      letter-spacing: 0.05em;
+      max-width: 540px;
+      margin: 0 auto 64px;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.5s forwards;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 48px;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.9s forwards;
+    }
+
+    .badge {
+      font-family: 'Cormorant SC', serif;
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      border: 1px solid var(--rule);
+      padding: 10px 24px;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      animation: fadeIn 1s ease 2.8s forwards;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: fadeUp 1s ease 2.8s infinite alternate;
+    }
+
+    .scroll-label {
+      font-family: 'Cormorant SC', serif;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      opacity: 0.6;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 120px 40px;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Cormorant SC', serif;
+      font-size: 10px;
+      letter-spacing: 0.5em;
+      color: var(--gold);
+      margin-bottom: 48px;
+      display: block;
+    }
+
+    .section-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    /* ── MANIFESTO ── */
+    .manifesto {
+      background: var(--navy-mid);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .manifesto-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .manifesto-lead {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--cream);
+      margin-bottom: 48px;
+    }
+
+    .manifesto-lead em { font-style: italic; color: var(--gold-light); }
+
+    .manifesto-body {
+      font-size: 14px;
+      line-height: 1.9;
+      color: var(--cream-dim);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .manifesto-body p + p { margin-top: 24px; }
+
+    /* ── HOW WE ENGAGE ── */
+    .engage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 64px;
+    }
+
+    .engage-card {
+      background: var(--navy-light);
+      padding: 56px 40px;
+      position: relative;
+      transition: background 0.4s;
+    }
+
+    .engage-card:hover { background: rgba(24,32,53,0.8); }
+
+    .engage-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--rule);
+      transition: background 0.4s;
+    }
+
+    .engage-card:hover::before { background: var(--gold); }
+
+    .engage-icon {
+      font-size: 18px;
+      color: var(--gold);
+      margin-bottom: 28px;
+      display: block;
+    }
+
+    .engage-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 8px;
+    }
+
+    .engage-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--gold);
+      margin-bottom: 24px;
+    }
+
+    .engage-body {
+      font-size: 13px;
+      line-height: 1.85;
+      color: var(--cream-dim);
+    }
+
+    /* ── TEAM ── */
+    .team { background: var(--navy); }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 64px 48px;
+      margin-top: 64px;
+    }
+
+    .team-member {}
+
+    .team-portrait {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      filter: grayscale(100%) contrast(1.05);
+      opacity: 0.75;
+      transition: opacity 0.5s, filter 0.5s;
+      display: block;
+      background: var(--navy-light);
+      margin-bottom: 24px;
+    }
+
+    .team-portrait-placeholder {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, var(--navy-light) 0%, var(--navy-mid) 100%);
+      border: 1px solid var(--rule);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .team-portrait-placeholder svg {
+      width: 40px;
+      height: 40px;
+      opacity: 0.15;
+    }
+
+    .team-member:hover .team-portrait { opacity: 0.95; filter: grayscale(80%) contrast(1.05); }
+
+    .team-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--cream);
+      margin-bottom: 6px;
+    }
+
+    .team-role {
+      font-family: 'Cormorant SC', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .team-bio {
+      font-size: 12.5px;
+      line-height: 1.85;
+      color: var(--cream-dim);
+    }
+
+    /* bottom row of 2 centered */
+    .team-grid-bottom {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 64px 48px;
+      max-width: 600px;
+      margin: 64px auto 0;
+    }
+
+    /* ── CONTACT ── */
+    .contact {
+      background: var(--navy-mid);
+      border-top: 1px solid var(--rule);
+      text-align: center;
+      padding: 120px 40px;
+    }
+
+    .contact-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 300;
+      color: var(--cream);
+      margin-bottom: 16px;
+    }
+
+    .contact-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--cream-dim);
+      margin-bottom: 56px;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 48px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      font-family: 'Cormorant SC', serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 4px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .contact-link:hover { color: var(--gold-pale); border-color: var(--gold-pale); }
+
+    .contact-divider { color: var(--rule); font-size: 18px; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      border-top: 1px solid var(--rule);
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Cormorant SC', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      color: rgba(200,192,168,0.35);
+    }
+
+    footer a { color: inherit; text-decoration: none; }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.2;
+      margin-bottom: 24px;
+    }
+
+    .section-title em { font-style: italic; color: var(--gold-light); }
+
+    /* ── DIVIDER ── */
+    .gold-rule {
+      width: 100%;
+      height: 1px;
+      background: var(--rule);
+      margin: 0;
+    }
+
+    /* ── TAGLINE STRIP ── */
+    .tagline-strip {
+      background: var(--gold);
+      padding: 28px 40px;
+      text-align: center;
+    }
+
+    .tagline-strip p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(15px, 2vw, 20px);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--navy);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 24px 32px; }
+      .nav-links { display: none; }
+      .engage-grid { grid-template-columns: 1fr; gap: 1px; }
+      .team-grid { grid-template-columns: 1fr 1fr; gap: 40px 32px; }
+      .team-grid-bottom { grid-template-columns: 1fr 1fr; max-width: 100%; }
+      .hero-badges { flex-direction: column; gap: 16px; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 20px 24px; }
+      section { padding: 80px 24px; }
+      .team-grid { grid-template-columns: 1fr; }
+      .team-grid-bottom { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAVIGATION ── -->
+  <nav>
+    <a href="#" class="nav-logo">ERA</a>
+    <ul class="nav-links">
+      <li><a href="#approach">Approach</a></li>
+      <li><a href="#engage">How We Engage</a></li>
+      <li><a href="#team">Leadership</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Contact</a>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero" id="top">
+
+    <!-- EU Stars Ring (SVG) -->
+    <div class="stars-ring" aria-hidden="true">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="120" height="120">
+        <g fill="#b8935a">
+          <!-- 12 stars arranged in circle -->
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(0,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(30,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(60,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(90,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(120,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(150,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(180,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(210,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(240,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(270,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(300,60,60)"/>
+          <polygon points="60,6 61.5,11 66.5,11 62.5,14 64,19 60,16 56,19 57.5,14 53.5,11 58.5,11" transform="rotate(330,60,60)"/>
+        </g>
+      </svg>
+    </div>
+
+    <p class="hero-eyebrow">ERA — European Risk Advisory</p>
+
+    <h1 class="hero-title">
+      Independent, seasoned judgment<br>
+      <em>at the moment of decision</em>
+    </h1>
+
+    <div class="hero-rule"></div>
+
+    <p class="hero-sub">Decision-layer advisory for global CEOs navigating European political, regulatory and reputational risk.</p>
+
+    <div class="hero-badges">
+      <span class="badge">Private</span>
+      <span class="badge">Senior</span>
+      <span class="badge">Independent</span>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span class="scroll-label">Scroll</span>
+    </div>
+  </section>
+
+  <!-- ── TAGLINE STRIP ── -->
+  <div class="tagline-strip">
+    <p>Europe will influence your strategy whether you operate there or not.</p>
+  </div>
+
+  <!-- ── MANIFESTO / APPROACH ── -->
+  <section class="manifesto" id="approach">
+    <div class="manifesto-inner">
+      <div class="section-rule reveal"></div>
+      <span class="section-label reveal">Our Approach</span>
+      <h2 class="manifesto-lead reveal">
+        We help global CEOs anticipate how Europe will shape their business —
+        <em>before it becomes a constraint.</em>
+      </h2>
+      <div class="manifesto-body reveal">
+        <p>Europe is not simply a market. It is a regulatory and geopolitical force increasingly defining global operating conditions. Decisions taken in Brussels or European capitals influence capital allocation, supply chains, competition policy, sanctions, industrial strategy, ESG standards and corporate reputation worldwide — including companies with no direct EU footprint.</p>
+        <p>The real risk is rarely lack of information, but fragmented interpretation. Political, regulatory and reputational exposure is often assessed in silos — internally and across advisors — without an integrated decisional view. ERA operates at that integration point, transforming dispersed signals into clear strategic judgment for the CEO.</p>
+        <p>We combine structured analytical frameworks with institutional-level insight grounded in direct experience of real decision-making environments — not open-source monitoring — to interpret real decision dynamics before they become public consequences. We do not execute, represent, or sell access. Our independence is structural.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="gold-rule"></div>
+
+  <!-- ── HOW WE ENGAGE ── -->
+  <section id="engage" style="background: var(--navy); padding-bottom: 0;">
+    <div class="container">
+      <div class="section-rule reveal"></div>
+      <span class="section-label reveal">How We Engage</span>
+      <h2 class="section-title reveal">Three modes of engagement.<br><em>One standard of judgment.</em></h2>
+    </div>
+    <div class="engage-grid">
+
+      <div class="engage-card reveal">
+        <span class="engage-icon">◎</span>
+        <h3 class="engage-title">Strategic Europe Retainer</h3>
+        <p class="engage-subtitle">Anticipation</p>
+        <p class="engage-body">Continuous preventive and decision intelligence. Support for decision-making preparation, both internally and externally to the CEO, to ensure that European political and regulatory trajectories that will affect business strategy are anticipated — one way or another.</p>
+      </div>
+
+      <div class="engage-card reveal">
+        <span class="engage-icon">◈</span>
+        <h3 class="engage-title">Decision Mandate</h3>
+        <p class="engage-subtitle">At the moment of decision</p>
+        <p class="engage-body">Structured advisory on high-stakes moments: market entry, regulatory inflection, capital deployment, cross-border M&A, reputational or political exposure. Delivered when the decision cannot wait and the margin for error is zero.</p>
+      </div>
+
+      <div class="engage-card reveal">
+        <span class="engage-icon">◇</span>
+        <h3 class="engage-title">High-Exposure Advisory</h3>
+        <p class="engage-subtitle">When pressure rises</p>
+        <p class="engage-body">Discreet counsel during moments of political or reputational stress, when European developments generate concentrated CEO and Board-level risk. Available to a limited number of principals.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── TEAM ── -->
+  <section class="team" id="team" style="padding-top: 120px;">
+    <div class="container">
+      <div class="section-rule reveal"></div>
+      <span class="section-label reveal">Leadership</span>
+      <h2 class="section-title reveal">The people behind<br><em>the judgment.</em></h2>
+
+      <div class="team-grid">
+
+        <!-- Chad Stevens -->
+        <div class="team-member reveal">
+          <div class="team-portrait-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <h3 class="team-name">Chad Stevens</h3>
+          <p class="team-role">United States</p>
+          <p class="team-bio">Former senior CIA officer. Spent 18 years at the Central Intelligence Agency in senior leadership roles advising U.S. policymakers on geopolitical and economic developments shaping global power, markets and security. Directed analytic programs on international economic risk, illicit financial networks and global corruption.</p>
+        </div>
+
+        <!-- Jorge Cachinero -->
+        <div class="team-member reveal">
+          <div class="team-portrait-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <h3 class="team-name">Jorge Cachinero</h3>
+          <p class="team-role">Spain — Brussels</p>
+          <p class="team-bio">30+ years of senior management experience in Government & Regulatory Affairs. Senior Geopolitical Risk Advisor to company owners and CEOs. Executive Education Director and Professor at IE Business School. Gold Medal for Merit from the President of Serbia.</p>
+        </div>
+
+        <!-- Eduardo Hernández-Aznar -->
+        <div class="team-member reveal">
+          <div class="team-portrait-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <h3 class="team-name">Eduardo Hernández-Aznar</h3>
+          <p class="team-role">Spain — Europe</p>
+          <p class="team-bio">18 years of experience in political and regulatory risk. Senior Parliamentary Analyst at the Spanish Senate. Former Senior Director for Public Affairs & EU Affairs at FIPRA Spain. Independent Political & Regulatory Risk Advisor focused on helping multinational executives understand the real political and regulatory risks shaping strategic decisions involving Europe.</p>
+        </div>
+
+      </div>
+
+      <div class="team-grid-bottom">
+
+        <!-- Nicolay Hernández -->
+        <div class="team-member reveal">
+          <div class="team-portrait-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <h3 class="team-name">Nicolay Hernández</h3>
+          <p class="team-role">International Relations</p>
+          <p class="team-bio">International relations professional with experience in global diplomacy, multilateral cooperation and international development. Former UN, USAID and EU Delegation experience in Colombia. Led multidisciplinary teams across New York and Geneva supporting strategic programs involving governments, international organisations and the private sector.</p>
+        </div>
+
+        <!-- Leslie Morales -->
+        <div class="team-member reveal">
+          <div class="team-portrait-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <h3 class="team-name">Leslie Morales</h3>
+          <p class="team-role">Financial Risk</p>
+          <p class="team-bio">Finance professional with over 13 years of experience in financial derivatives, market risk management and quantitative financial analysis. Strong analytical and quantitative background including financial modelling, market risk assessment and investment decision support.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section class="contact" id="contact">
+    <div class="section-rule reveal" style="margin: 0 auto 16px;"></div>
+    <span class="section-label reveal" style="display:block; text-align:center; margin-bottom: 40px;">Contact</span>
+    <h2 class="contact-headline reveal">Ready to speak<br><em>with our principals?</em></h2>
+    <p class="contact-sub reveal">Discreet. Senior. Confidential.</p>
+    <div class="contact-links reveal">
+      <a href="https://era-advisory.com" class="contact-link" target="_blank">era-advisory.com</a>
+      <span class="contact-divider">·</span>
+      <a href="mailto:info@era-advisory.com" class="contact-link">info@era-advisory.com</a>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span>© 2026 ERA — European Risk Advisory</span>
+    <span>Independent, Seasoned Judgment at the Moment of Decision</span>
+    <a href="mailto:info@era-advisory.com">info@era-advisory.com</a>
+  </footer>
+
+  <script>
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          // slight stagger based on siblings
+          const siblings = Array.from(entry.target.parentElement.querySelectorAll('.reveal'));
+          const idx = siblings.indexOf(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, idx * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealEls.forEach(el => observer.observe(el));
+
+    // Stars ring fade-in
+    const ring = document.querySelector('.stars-ring');
+    if (ring) {
+      setTimeout(() => {
+        ring.style.opacity = '1';
+        ring.style.transition = 'opacity 1.2s ease';
+      }, 300);
+    }
+  </script>
+</body>
+</html>
